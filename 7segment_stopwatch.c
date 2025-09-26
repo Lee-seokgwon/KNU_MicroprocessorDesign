@@ -25,11 +25,11 @@
 #define DIGIT6   (1U << 13)  // COM6
 
 // ---------------- Switch ---------------- //
-// 스위치 4개 (PC0~PC3)
-#define SW1   (1U << 0)
-#define SW2   (1U << 1)
-#define SW3   (1U << 2)
-#define SW4   (1U << 3)
+// 스위치 4개 (PA6~PA9)
+#define SW1   (1U << 6)
+#define SW2   (1U << 7)
+#define SW3   (1U << 8)
+#define SW4   (1U << 9)
 
 // ---------------- 세그먼트 숫자 패턴 ---------------- //
 // gfedcba (active high 기준, 공통 캐소드)
@@ -48,7 +48,7 @@ const uint8_t seg_pattern[10] = {
 
 // ---------------- 전역 변수 ---------------- //
 float number = 1995.34;  // 초기값
-float presets[4] = {1995.34, 2023.11, 1234.56, 9999.99};
+float presets[4] = {1111.11, 2222.22, 3333.33, 4444.44};
 
 // ---------------- 함수 선언 ---------------- //
 void delay(volatile uint32_t d);
@@ -79,7 +79,7 @@ void init_ports(void) {
     PCC->PCCn[PCC_PORTB_INDEX] |= PCC_PCCn_CGC_MASK;
     PCC->PCCn[PCC_PORTD_INDEX] |= PCC_PCCn_CGC_MASK;
     PCC->PCCn[PCC_PORTE_INDEX] |= PCC_PCCn_CGC_MASK;
-    PCC->PCCn[PCC_PORTC_INDEX] |= PCC_PCCn_CGC_MASK; // 스위치용
+    PCC->PCCn[PCC_PORTA_INDEX] |= PCC_PCCn_CGC_MASK; // 스위치용
 
     // ---------------- 세그먼트 핀 출력 ---------------- //
     PORTD->PCR[10] = PORT_PCR_SET_GPIO_MUX; // A
@@ -99,9 +99,9 @@ void init_ports(void) {
     GPIOB->PDDR |= (0x3F << 8); // PB8~13
 
     // ---------------- 스위치 입력 ---------------- //
-    for (int i=0; i<4; i++)
-        PORTC->PCR[i] = PORT_PCR_SET_GPIO_MUX | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK;
-    GPIOC->PDDR &= ~0xF; // PC0~3 입력
+    for (int i=6; i<10; i++)
+        PORTA->PCR[i] = PORT_PCR_SET_GPIO_MUX | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK;
+    GPIOA->PDDR &= ~(0xF<<6); // PA6~9 입력
 }
 
 void display_number(float num) {
@@ -155,15 +155,15 @@ void display_digit(int digit, int value, int dp) {
     GPIOB->PCOR = (0x3F << 8); // 자리 off
 }
 
-/*
-void check_switch(void) {
-    if (!(GPIOC->PDIR & SW1)) number = presets[0];
-    else if (!(GPIOC->PDIR & SW2)) number = presets[1];
-    else if (!(GPIOC->PDIR & SW3)) number = presets[2];
-    else if (!(GPIOC->PDIR & SW4)) number = presets[3];
-}
-*/
 
+void check_switch(void) {
+    if (!(GPIOA->PDIR & SW1)) number = presets[0];
+    else if (!(GPIOA->PDIR & SW2)) number = presets[1];
+    else if (!(GPIOA->PDIR & SW3)) number = presets[2];
+    else if (!(GPIOA->PDIR & SW4)) number = presets[3];
+}
+
+/*
 void check_switch(void) {
     static uint8_t prev_sw_state = 0x0F;  // 이 줄 추가
 
@@ -177,3 +177,4 @@ void check_switch(void) {
 
     prev_sw_state = curr_sw_state;  // 이 줄 추가
 }
+*/
