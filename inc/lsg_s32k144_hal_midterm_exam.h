@@ -45,8 +45,7 @@
 #define PORTE_PCR(n)    (*(volatile unsigned*)(PORTE_BASE + (n)*4))
 
 // PORT PCR - MUX
-#define PORT_PCR_MUX_GPIO (1U << 8) //MUX set to GPIO
-#define PORT_PCR_SET_GPIO_MUX (PORT_PCR_MUX_GPIO)
+#define MUX_BITS        8
 
 // PORT PCR - PullUp / PullDown / PullEnable
 #define PORT_PCR_PE_MASK  (1U << 1) //PULL enable
