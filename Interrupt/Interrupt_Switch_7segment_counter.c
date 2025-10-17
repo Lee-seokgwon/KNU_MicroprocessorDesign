@@ -1,5 +1,3 @@
-// 스위치를 인터럽트로 읽어서, 입력될시마다 7세그먼트 표시 숫자가 하나씩 올라감
-
 #include <stdint.h>
 
 /* =================== PCC =================== */
@@ -202,7 +200,8 @@ void delay(volatile uint32_t d) {
 /* =================== PORTC 인터럽트 핸들러 =================== */
 void PORTC_IRQHandler(void)
 {
-    count++;
+    delay(40000); //for Debouncing
+	count++;
     if (count > 999999) count = 0;
     PORTC_PCR(12) |= (1 << ISF_BIT);  // ISF clear
 }
