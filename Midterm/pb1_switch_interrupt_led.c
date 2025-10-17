@@ -227,4 +227,5 @@ void PORTC_IRQHandler(void)
     PORTC_PCR(13) |= (1 << ISF_BIT); // Clear ISF BIT
 }
 
+//포트 인터럽트 핸들러 함수 이름은 포트에 맞게 A,B,C,D,E 변경하면 된다.
 
