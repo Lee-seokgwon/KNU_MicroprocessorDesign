@@ -204,14 +204,24 @@
 //============================================================================
 
 #define PCC_ADC0 *((volatile unsigned*)(PCC_BASE + 0xEC))
+#define PCC_ADC1 *((volatile unsigned*)(PCC_BASE + 0x9C))
 
 #define ADC0_BASE (0x4003B000)
-#define ADC0_SC1A *((volatile unsigned*)(ADC0_BASE + 0x0))
+#define ADC1_BASE (0x40027000)
+
+#define ADC0_SC1A *((volatile unsigned*)(ADC0_BASE + 0x0)) //SC1B SC1C 는 4바이트 간격
 #define ADC0_CFG1 *((volatile unsigned*)(ADC0_BASE + 0x40))
 #define ADC0_CFG2 *((volatile unsigned*)(ADC0_BASE + 0x44))
-#define ADC0_RA *((volatile unsigned*)(ADC0_BASE + 0x48))
+#define ADC0_RA *((volatile unsigned*)(ADC0_BASE + 0x48)) //RB RC .. 는 4바이트 간격
 #define ADC0_SC2 *((volatile unsigned*)(ADC0_BASE + 0x90))
 #define ADC0_SC3 *((volatile unsigned*)(ADC0_BASE + 0x94))
+
+#define ADC1_SC1A *((volatile unsigned*)(ADC1_BASE + 0x0)) //SC1B SC1C .. 는 4바이트 간격
+#define ADC1_CFG1 *((volatile unsigned*)(ADC1_BASE + 0x40))
+#define ADC1_CFG2 *((volatile unsigned*)(ADC1_BASE + 0x44))
+#define ADC1_RA *((volatile unsigned*)(ADC1_BASE + 0x48)) //RB RC .. 는 4바이트 간격
+#define ADC1_SC2 *((volatile unsigned*)(ADC1_BASE + 0x90))
+#define ADC1_SC3 *((volatile unsigned*)(ADC1_BASE + 0x94))
 
 #define ADCH_BITS 0
 #define COCO_BIT 7
@@ -307,7 +317,7 @@ void ADC0_init(void)
 
 void adc_start(void)
 {
-    //// 슬롯 A: SE12 (PTB2, 가변저항)
+    //// 슬롯 A: SE12 (가변저항)
     ADC0_SC1A &= ~((0b1111111)<<ADCH_BITS);
     ADC0_SC1A |= (ADC0_SE12<<ADCH_BITS);
 }
