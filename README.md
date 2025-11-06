@@ -1,2 +1,2 @@
 2025 경북대 전자공학부 마이크로프로세서설계실험
-(nxp s32k144)
+(nxp s32k144 EVB) (URE_1040 Cortex-M4F/M0+ EDU KIT)
