@@ -315,7 +315,6 @@ void FTM0_CH1_PWM(void)
 
     FTM0_SC |= (1<<PWMEN1_BIT);
     FTM0_SC &= ~((0b111)<<PS_BITS);
-    FTM0_SC |= ((0b001)<<PS_BITS);
 
     FTM0_MOD = 10000 - 1;
     FTM0_CNTIN = 0;
@@ -330,7 +329,7 @@ void FTM0_CH1_PWM(void)
 
 void playTone(uint32_t freq)
 {
-    uint32_t mod = (20000000U / freq) - 1;   // 20MHz / freq
+    uint32_t mod = (8000000U / freq) - 1;   // 8MHz / freq
     FTM0_MOD = mod;
     FTM0_C1V = mod / 2;   // 50% duty
 }
@@ -350,14 +349,14 @@ void playNote(uint32_t freq, uint32_t duration_ms)
 
 void playMelody(void)
 {
-    playNote(523, 200);  // 도 (5옥타브)
-    playNote(587, 200);  // 레
-    playNote(659, 200);  // 미
-    playNote(698, 200);  // 파
-    playNote(784, 200);  // 솔
-    playNote(880, 200);  // 라
-    playNote(988, 200);  // 시
-    playNote(1046, 400); // 높은 도
+    playNote(261, 200);  // 도 (4옥타브)
+    playNote(293, 200);  // 레
+    playNote(330, 200);  // 미
+    playNote(349, 200);  // 파
+    playNote(392, 200);  // 솔
+    playNote(440, 200);  // 라
+    playNote(494, 200);  // 시
+    playNote(523, 400);  // 높은 도 (원래 1046 → 한 옥타브 아래)
 
     noTone();
 }
