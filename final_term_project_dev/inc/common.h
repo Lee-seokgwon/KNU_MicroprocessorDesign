@@ -45,8 +45,8 @@
 
 #define MUX_BITS        8
 
-#define PORT_PCR_PE_MASK  (1U << 1) 
-#define PORT_PCR_PS_MASK  (1U << 0) 
+#define PORT_PCR_PE_MASK  (1U << 1)
+#define PORT_PCR_PS_MASK  (1U << 0)
 
 #define IRQC_BITS       16
 #define ISF_BIT         24
@@ -56,6 +56,9 @@
 #define PTB1 1
 #define PTB2 2
 #define PTB3 3
+
+#define PTC12 12
+#define PTC13 13
 
 #define PTD0 0
 #define PTD15 15
@@ -131,11 +134,11 @@
 // NVIC (for interrupt)
 //============================================================================
 
-#define NVIC_ISER_BASE   (0xE000E100U)   
-#define NVIC_ICER_BASE   (0xE000E180U)   
-#define NVIC_ISPR_BASE   (0xE000E200U)   
-#define NVIC_ICPR_BASE   (0xE000E280U)  
-#define NVIC_IABR_BASE   (0xE000E300U)  
+#define NVIC_ISER_BASE   (0xE000E100U)
+#define NVIC_ICER_BASE   (0xE000E180U)
+#define NVIC_ISPR_BASE   (0xE000E200U)
+#define NVIC_ICPR_BASE   (0xE000E280U)
+#define NVIC_IABR_BASE   (0xE000E300U)
 #define NVIC_IPR_BASE    (0xE000E400U)
 
 #define NVIC_ISER0   (*(volatile unsigned*)(NVIC_ISER_BASE + 0x00))
@@ -169,6 +172,10 @@
 #define NVIC_IPR61  (*(volatile unsigned char*)(NVIC_IPR_BASE + 0x3D)) // PORTC
 #define NVIC_IPR62  (*(volatile unsigned char*)(NVIC_IPR_BASE + 0x3E)) // PORTD
 #define NVIC_IPR63  (*(volatile unsigned char*)(NVIC_IPR_BASE + 0x3F)) // PORTE
+
+#define IRQC_RISING_EDGE   0b1001
+#define IRQC_FALLING_EDGE  0b1010
+#define IRQC_EITHER_EDGE   0b1011
 
 //============================================================================
 // NVIC
@@ -210,17 +217,17 @@
 #define ADC0_BASE (0x4003B000)
 #define ADC1_BASE (0x40027000)
 
-#define ADC0_SC1A *((volatile unsigned*)(ADC0_BASE + 0x0)) 
+#define ADC0_SC1A *((volatile unsigned*)(ADC0_BASE + 0x0))
 #define ADC0_CFG1 *((volatile unsigned*)(ADC0_BASE + 0x40))
 #define ADC0_CFG2 *((volatile unsigned*)(ADC0_BASE + 0x44))
-#define ADC0_RA *((volatile unsigned*)(ADC0_BASE + 0x48)) 
+#define ADC0_RA *((volatile unsigned*)(ADC0_BASE + 0x48))
 #define ADC0_SC2 *((volatile unsigned*)(ADC0_BASE + 0x90))
 #define ADC0_SC3 *((volatile unsigned*)(ADC0_BASE + 0x94))
 
-#define ADC1_SC1A *((volatile unsigned*)(ADC1_BASE + 0x0)) 
+#define ADC1_SC1A *((volatile unsigned*)(ADC1_BASE + 0x0))
 #define ADC1_CFG1 *((volatile unsigned*)(ADC1_BASE + 0x40))
 #define ADC1_CFG2 *((volatile unsigned*)(ADC1_BASE + 0x44))
-#define ADC1_RA *((volatile unsigned*)(ADC1_BASE + 0x48)) 
+#define ADC1_RA *((volatile unsigned*)(ADC1_BASE + 0x48))
 #define ADC1_SC2 *((volatile unsigned*)(ADC1_BASE + 0x90))
 #define ADC1_SC3 *((volatile unsigned*)(ADC1_BASE + 0x94))
 

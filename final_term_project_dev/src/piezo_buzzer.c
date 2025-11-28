@@ -43,7 +43,7 @@ void piezo_playNote(uint32_t freq, uint32_t duration_ms)
 }
 
 
-// 인자를 문자열로 받아서, 해당 문자열에 맞는 노래 출력 
+// 인자를 문자열로 받아서, 해당 문자열에 맞는 노래 출력
 // (내부 음계는 노래 정해지면 추후 수정)
 void piezo_playMelody(const char* song)
 {

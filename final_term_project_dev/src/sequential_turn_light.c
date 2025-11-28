@@ -4,6 +4,31 @@
 bool g_left_request  = false;
 bool g_right_request = false;
 
+unsigned char SEQUENTIAL_LIGHT_PATTERN_LEFT[9] = {
+    0b00000001,
+    0b00000011,
+    0b00000111,
+    0b00001111,
+    0b00011111,
+    0b00111111,
+    0b01111111,
+    0b11111111,
+    0b00000000
+};
+
+unsigned char SEQUENTIAL_LIGHT_PATTERN_RIGHT[9] = {
+    0b10000000,
+    0b11000000,
+    0b11100000,
+    0b11110000,
+    0b11111000,
+    0b11111100,
+    0b11111110,
+    0b11111111,
+    0b00000000
+};
+
+
 void sequential_turn_light_switch_init (void)
 {
     PCC_PORTC |= (1 << CGC_BIT);
@@ -48,4 +73,3 @@ void sequential_turn_light_port_init(void)
     sequential_turn_light_switch_init();
     sequential_turn_light_led_init();
 }
-

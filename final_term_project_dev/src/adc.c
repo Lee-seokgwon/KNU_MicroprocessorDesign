@@ -41,6 +41,3 @@ uint16_t ADC0_ReadChannel(uint8_t ch)
 
     return (uint16_t)ADC0_RA;   // 0 ~ 4095 (12bit)
 }
-
-
-
