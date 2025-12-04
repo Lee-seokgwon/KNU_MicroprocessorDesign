@@ -11,23 +11,23 @@ const unsigned char STEPPER_SEQ[4] = {
     0b1000
 };
 
-//PTB0~PTB3 GPIO output (스탭모터 제어용 출력핀)
+//PTB4~PTB7 GPIO output (스탭모터 제어용 출력핀)
 void step_motor_port_init(void)
 {
     PCC_PORTB |= (1 << CGC_BIT);
 
-    PORTB_PCR(PTB0) &= ~(0b111 << MUX_BITS);
-    PORTB_PCR(PTB0) |=  (1 << MUX_BITS);
-    PORTB_PCR(PTB1) &= ~(0b111 << MUX_BITS);
-    PORTB_PCR(PTB1) |=  (1 << MUX_BITS);
-    PORTB_PCR(PTB2) &= ~(0b111 << MUX_BITS);
-    PORTB_PCR(PTB2) |=  (1 << MUX_BITS);
-    PORTB_PCR(PTB3) &= ~(0b111 << MUX_BITS);
-    PORTB_PCR(PTB3) |=  (1 << MUX_BITS);
+    PORTB_PCR(PTB4) &= ~(0b111 << MUX_BITS);
+    PORTB_PCR(PTB4) |=  (1 << MUX_BITS);
+    PORTB_PCR(PTB5) &= ~(0b111 << MUX_BITS);
+    PORTB_PCR(PTB5) |=  (1 << MUX_BITS);
+    PORTB_PCR(PTB6) &= ~(0b111 << MUX_BITS);
+    PORTB_PCR(PTB6) |=  (1 << MUX_BITS);
+    PORTB_PCR(PTB7) &= ~(0b111 << MUX_BITS);
+    PORTB_PCR(PTB7) |=  (1 << MUX_BITS);
 
-    GPIOB_PDDR |= (1 << PTB0) | (1 << PTB1) | (1 << PTB2) | (1 << PTB3);
+    GPIOB_PDDR |= (1 << PTB4) | (1 << PTB5) | (1 << PTB6) | (1 << PTB7);
 
-    GPIOB_PDOR &= ~0x0F;
+    GPIOB_PDOR &= ~0xF0;
 }
 
 void step_motor_delay(volatile uint32_t d) {
@@ -42,7 +42,7 @@ void step_motor_step_left(void)
 
     unsigned char seq = STEPPER_SEQ[g_step_idx];
 
-    GPIOB_PDOR = (GPIOB_PDOR & ~0x0F) | (seq & 0x0F);
+    GPIOB_PDOR = (GPIOB_PDOR & ~0xF0) | (seq & 0x0F);
 }
 
 void step_motor_step_right(void)
@@ -53,5 +53,5 @@ void step_motor_step_right(void)
 
     unsigned char seq = STEPPER_SEQ[g_step_idx];
 
-    GPIOB_PDOR = (GPIOB_PDOR & ~0x0F) | (seq & 0x0F);
+    GPIOB_PDOR = (GPIOB_PDOR & ~0xF0) | (seq & 0x0F);
 }

@@ -7,6 +7,7 @@
 #include "sequential_turn_light.h"
 #include "step_motor.h"
 #include "step_motor_and_turn_light_controller.h"
+#include "ultrasonic.h"
 
 int main(void)
 {
@@ -28,7 +29,7 @@ int main(void)
     step_motor_port_init();             // Step motor control pins
 
     piezo_port_init();                  // Piezo buzzer GPIO init
-
+    ultrasonic_port_init();             // ultrasonic port init
     NVIC_init_IRQs();                   // Interrupt controller init
 
     FTM0_CH1_PWM();                     // Optional: PWM channel init

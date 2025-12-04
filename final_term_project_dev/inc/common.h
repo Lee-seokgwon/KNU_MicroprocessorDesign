@@ -56,6 +56,10 @@
 #define PTB1 1
 #define PTB2 2
 #define PTB3 3
+#define PTB4 3
+#define PTB5 3
+#define PTB6 3
+#define PTB7 3
 
 #define PTC12 12
 #define PTC13 13
@@ -63,9 +67,8 @@
 #define PTD0 0
 #define PTD15 15
 #define PTD16 16
-
 //============================================================================
-// PORTn_PCRx MUX setting
+// dn_PCRx MUX setting
 //============================================================================
 
 
@@ -251,6 +254,7 @@
 //============================================================================
 
 #define PCC_FTM0 *((volatile unsigned*)(PCC_BASE + 0xE0))
+#define PCC_FTM1 (*(volatile unsigned*)(PCC_BASE + 0xE4))
 #define PCC_FTM2  (*(volatile unsigned*)(PCC_BASE + 0xE8))
 
 #define FTM0_BASE (0x40038000)
@@ -260,11 +264,19 @@
 #define FTM0_C1V *((volatile unsigned*)(FTM0_BASE + 0x18))
 #define FTM0_CNTIN *((volatile unsigned*)(FTM0_BASE + 0x4C))
 
+#define FTM1_BASE (0x40039000)
+#define FTM1_SC *((volatile unsigned*)(FTM1_BASE + 0x0))
+#define FTM1_MOD *((volatile unsigned*)(FTM1_BASE + 0x8))
+#define FTM1_C5SC *((volatile unsigned*)(FTM1_BASE + 0x34))
+#define FTM1_C5V *((volatile unsigned*)(FTM1_BASE + 0x38))
+#define FTM1_CNTIN *((volatile unsigned*)(FTM1_BASE + 0x4C))
+
 #define FTM2_BASE (0x4003A000)
 #define FTM2_SC     (*(volatile unsigned*)(FTM2_BASE + 0x0))
 #define FTM2_MOD    (*(volatile unsigned*)(FTM2_BASE + 0x8))
 #define FTM2_C0SC   (*(volatile unsigned*)(FTM2_BASE + 0x0C))
 #define FTM2_C0V    (*(volatile unsigned*)(FTM2_BASE + 0x10))
+#define FTM2_C1V    (*(volatile unsigned*)(FTM2_BASE + 0x18))
 #define FTM2_CNTIN  (*(volatile unsigned*)(FTM2_BASE + 0x4C))
 
 #define PWMEN1_BIT 17
