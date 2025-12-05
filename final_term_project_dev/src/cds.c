@@ -1,12 +1,12 @@
-#include "inc/common.h"
-#include "inc/adc.h"
-#include "inc/cds.h"
+#include "common.h"
+#include "adc.h"
+#include "cds.h"
 
-// CdS가 연결된 채널(PTC17, ADC0_SE12)
-#define ADC_CH_CDS 12
+// CdS가 연결된 채널(PTC17, ADC0_SE15)
+#define ADC_CH_CDS 14
 
 uint16_t read_cds()
 {
-    uint16_t cdsResult = ADC0_ReadChannel(ADC_CH_CDS);
+    uint16_t cdsResult = ADC0_ReadChannel();
     return cdsResult;
 }

@@ -1,6 +1,6 @@
-#include "inc/common.h"
-#include "inc/piezo_buzzer.h"
-#include "inc/pwm.h"
+#include "common.h"
+#include "piezo_buzzer.h"
+#include "pwm.h"
 
 //PTD16 PWM
 void piezo_port_init(void)
@@ -73,6 +73,35 @@ void piezo_playMelody(const char* song)
         piezo_noTone();
         return;
     }
+
+    piezo_noTone();
+}
+
+// 떳다떳다비행기 노래 재생
+void piezo_playAirplane(void)
+{
+    uint32_t d = 20;   // 음 길이 20ms
+
+    // 미 레 도 레
+    piezo_playNote(659, d);  // 미
+    piezo_playNote(587, d);  // 레
+    piezo_playNote(523, d);  // 도
+    piezo_playNote(587, d);  // 레
+
+    // 미 미 미
+    piezo_playNote(659, d);
+    piezo_playNote(659, d);
+    piezo_playNote(659, d);
+
+    // 레 레 레
+    piezo_playNote(587, d);
+    piezo_playNote(587, d);
+    piezo_playNote(587, d);
+
+    // 미 미 미
+    piezo_playNote(659, d);
+    piezo_playNote(659, d);
+    piezo_playNote(659, d);
 
     piezo_noTone();
 }

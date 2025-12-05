@@ -1,14 +1,13 @@
-#ifndef COMMON_H
-#define COMMON_H
+//가변저항 값을 ADC를 통해 읽어와서, 결과값에 따라 LED를 색 변경
 
 #include <stdint.h>
-#include <string.h>
-#include <stdbool.h>
 #include "S32K144.h" //클럭 생성용 임시 헤더
 
 //============================================================================
-// PCC
+// PCC for Port Clock Enable
 //============================================================================
+
+// PCC 베이스 주소 (datasheet 623p)
 #define PCC_BASE   (0x40065000U)
 
 #define PCC_PORTA       (*(volatile unsigned*)(PCC_BASE + 0x124))
@@ -17,58 +16,51 @@
 #define PCC_PORTD       (*(volatile unsigned*)(PCC_BASE + 0x130))
 #define PCC_PORTE       (*(volatile unsigned*)(PCC_BASE + 0x134))
 
+// PORTn clock enable 마스크, (datasheet 656)
 #define PCC_CGC_MASK (1U << 30)
-#define CGC_BIT 30
 
 //============================================================================
-// PCC
+// PCC for Port Clock Enable
 //============================================================================
 
 
 
 
 //============================================================================
-// PORTn_PCRx MUX setting
+// PORTn_PCRx MUX setting (Set PORTn Pin x operate as GPIO) , PORTn_BASE = PORTn의 PCR Base 주소
 //============================================================================
 
+// PORT 베이스 주소 (LMS exel file)
 #define PORTA_BASE (0x40049000U)
 #define PORTB_BASE (0x4004A000U)
 #define PORTC_BASE (0x4004B000U)
 #define PORTD_BASE (0x4004C000U)
 #define PORTE_BASE (0x4004D000U)
 
+//PORTn PCR (n = Pin number, 핀 마다의 설정)
 #define PORTA_PCR(n)    (*(volatile unsigned*)(PORTA_BASE + (n)*4))
 #define PORTB_PCR(n)    (*(volatile unsigned*)(PORTB_BASE + (n)*4))
 #define PORTC_PCR(n)    (*(volatile unsigned*)(PORTC_BASE + (n)*4))
 #define PORTD_PCR(n)    (*(volatile unsigned*)(PORTD_BASE + (n)*4))
 #define PORTE_PCR(n)    (*(volatile unsigned*)(PORTE_BASE + (n)*4))
 
+// PORT PCR - MUX
 #define MUX_BITS        8
 
-#define PORT_PCR_PE_MASK  (1U << 1)
-#define PORT_PCR_PS_MASK  (1U << 0)
+// PORT PCR - PullUp / PullDown / PullEnable
+#define PORT_PCR_PE_MASK  (1U << 1) //PULL enable
+#define PORT_PCR_PS_MASK  (1U << 0) //PULL select
 
+// PORT PCR - Interrupt
 #define IRQC_BITS       16
 #define ISF_BIT         24
-
-
-#define PTB0 0
-#define PTB1 1
-#define PTB2 2
-#define PTB3 3
-#define PTB4 4
-#define PTB5 5
-#define PTB6 6
-#define PTB7 7
-
-#define PTC12 12
-#define PTC13 13
 
 #define PTD0 0
 #define PTD15 15
 #define PTD16 16
+
 //============================================================================
-// dn_PCRx MUX setting
+// PORTn_PCRx MUX setting (Set PORTn Pin x operate as GPIO) , PORTn_BASE = PORTn의 PCR Base 주소
 //============================================================================
 
 
@@ -79,6 +71,7 @@
 // GPIO BASE (PDDR, PDIR, PDOR, PSOR, PCOR)
 //============================================================================
 
+//GPIO 베이스 주소 (datasheet 229p)
 #define GPIOA_BASE (0x400FF000U)
 #define GPIOB_BASE (0x400FF040U)
 #define GPIOC_BASE (0x400FF080U)
@@ -137,12 +130,12 @@
 // NVIC (for interrupt)
 //============================================================================
 
-#define NVIC_ISER_BASE   (0xE000E100U)
-#define NVIC_ICER_BASE   (0xE000E180U)
-#define NVIC_ISPR_BASE   (0xE000E200U)
-#define NVIC_ICPR_BASE   (0xE000E280U)
-#define NVIC_IABR_BASE   (0xE000E300U)
-#define NVIC_IPR_BASE    (0xE000E400U)
+#define NVIC_ISER_BASE   (0xE000E100U)   // Interrupt Set Enable
+#define NVIC_ICER_BASE   (0xE000E180U)   // Interrupt Clear Enable
+#define NVIC_ISPR_BASE   (0xE000E200U)   // Interrupt Set Pending
+#define NVIC_ICPR_BASE   (0xE000E280U)   // Interrupt Clear Pending
+#define NVIC_IABR_BASE   (0xE000E300U)   // Interrupt Active Bit
+#define NVIC_IPR_BASE    (0xE000E400U)   // Interrupt Priority
 
 #define NVIC_ISER0   (*(volatile unsigned*)(NVIC_ISER_BASE + 0x00))
 #define NVIC_ISER1   (*(volatile unsigned*)(NVIC_ISER_BASE + 0x04))
@@ -175,10 +168,6 @@
 #define NVIC_IPR61  (*(volatile unsigned char*)(NVIC_IPR_BASE + 0x3D)) // PORTC
 #define NVIC_IPR62  (*(volatile unsigned char*)(NVIC_IPR_BASE + 0x3E)) // PORTD
 #define NVIC_IPR63  (*(volatile unsigned char*)(NVIC_IPR_BASE + 0x3F)) // PORTE
-
-#define IRQC_RISING_EDGE   0b1001
-#define IRQC_FALLING_EDGE  0b1010
-#define IRQC_EITHER_EDGE   0b1011
 
 //============================================================================
 // NVIC
@@ -220,17 +209,17 @@
 #define ADC0_BASE (0x4003B000)
 #define ADC1_BASE (0x40027000)
 
-#define ADC0_SC1A *((volatile unsigned*)(ADC0_BASE + 0x0))
+#define ADC0_SC1A *((volatile unsigned*)(ADC0_BASE + 0x0)) //SC1B SC1C 는 4바이트 간격
 #define ADC0_CFG1 *((volatile unsigned*)(ADC0_BASE + 0x40))
 #define ADC0_CFG2 *((volatile unsigned*)(ADC0_BASE + 0x44))
-#define ADC0_RA *((volatile unsigned*)(ADC0_BASE + 0x48))
+#define ADC0_RA *((volatile unsigned*)(ADC0_BASE + 0x48)) //RB RC .. 는 4바이트 간격
 #define ADC0_SC2 *((volatile unsigned*)(ADC0_BASE + 0x90))
 #define ADC0_SC3 *((volatile unsigned*)(ADC0_BASE + 0x94))
 
-#define ADC1_SC1A *((volatile unsigned*)(ADC1_BASE + 0x0))
+#define ADC1_SC1A *((volatile unsigned*)(ADC1_BASE + 0x0)) //SC1B SC1C .. 는 4바이트 간격
 #define ADC1_CFG1 *((volatile unsigned*)(ADC1_BASE + 0x40))
 #define ADC1_CFG2 *((volatile unsigned*)(ADC1_BASE + 0x44))
-#define ADC1_RA *((volatile unsigned*)(ADC1_BASE + 0x48))
+#define ADC1_RA *((volatile unsigned*)(ADC1_BASE + 0x48)) //RB RC .. 는 4바이트 간격
 #define ADC1_SC2 *((volatile unsigned*)(ADC1_BASE + 0x90))
 #define ADC1_SC3 *((volatile unsigned*)(ADC1_BASE + 0x94))
 
@@ -242,68 +231,157 @@
 #define ADTRG_BIT 6
 
 #define ADC0_SE12 12
-#define ADC0_SE4 4
 
 //============================================================================
 // ADC
 //============================================================================
 
+void PORT_init(void);
+void ADC0_init(void);
+void adc_start(void);
+uint32_t read_adc_chx(void);
 
-//============================================================================
-// PWM (FTM + PWM) , PWM생성시에는 Flexible Timer 사용
-//============================================================================
+int main(void)
+{
+    uint32_t adcResult=0;
 
-#define PCC_FTM0 *((volatile unsigned*)(PCC_BASE + 0xE0))
-#define PCC_FTM1 (*(volatile unsigned*)(PCC_BASE + 0xE4))
-#define PCC_FTM2  (*(volatile unsigned*)(PCC_BASE + 0xE8))
+    SOSC_init_8MHz();
+    SPLL_init_160MHz();
+    NormalRUNmode_80MHz();
+    PORT_init();
+    ADC0_init();
 
-#define FTM0_BASE (0x40038000)
-#define FTM0_SC *((volatile unsigned*)(FTM0_BASE + 0x0))
-#define FTM0_MOD *((volatile unsigned*)(FTM0_BASE + 0x8))
-#define FTM0_C1SC *((volatile unsigned*)(FTM0_BASE + 0x14))
-#define FTM0_C1V *((volatile unsigned*)(FTM0_BASE + 0x18))
-#define FTM0_CNTIN *((volatile unsigned*)(FTM0_BASE + 0x4C))
+    for (;;)
+    {
+        adc_start();
+        adcResult = read_adc_chx();
 
-#define FTM1_BASE (0x40039000)
-#define FTM1_SC *((volatile unsigned*)(FTM1_BASE + 0x0))
-#define FTM1_MOD *((volatile unsigned*)(FTM1_BASE + 0x8))
-#define FTM1_C5SC *((volatile unsigned*)(FTM1_BASE + 0x34))
-#define FTM1_C5V *((volatile unsigned*)(FTM1_BASE + 0x38))
-#define FTM1_CNTIN *((volatile unsigned*)(FTM1_BASE + 0x4C))
+        if (adcResult > 3072)
+        {
+            GPIOD_PSOR |= ((1<<PTD0) | (1<<PTD16));
+            GPIOD_PCOR |= (1<<PTD15);
+        }
+        else if (adcResult > 2048)
+        {
+            GPIOD_PSOR |= ((1<<PTD0) | (1<<PTD15));
+            GPIOD_PCOR |= (1<<PTD16);
+        }
+        else if (adcResult > 1024)
+        {
+            GPIOD_PSOR |= ((1<<PTD15) | (1<<PTD16));
+            GPIOD_PCOR |= (1<<PTD0);
+        }
+        else
+        {
+            GPIOD_PSOR |= ((1<<PTD0) | (1<<PTD15) | (1<<PTD16));
+        }
+    }
+}
 
-#define FTM2_BASE (0x4003A000)
-#define FTM2_SC     (*(volatile unsigned*)(FTM2_BASE + 0x0))
-#define FTM2_MOD    (*(volatile unsigned*)(FTM2_BASE + 0x8))
-#define FTM2_C0SC   (*(volatile unsigned*)(FTM2_BASE + 0x0C))
-#define FTM2_C0V    (*(volatile unsigned*)(FTM2_BASE + 0x10))
-#define FTM2_C1V    (*(volatile unsigned*)(FTM2_BASE + 0x18))
-#define FTM2_CNTIN  (*(volatile unsigned*)(FTM2_BASE + 0x4C))
+void PORT_init(void)
+{
+    //보드 내장 LED 빨 노 초
+    PCC_PORTD |= PCC_CGC_MASK;
 
-#define PWMEN1_BIT 17
-#define PWMEN0_BIT 16
-#define CLKS_BITS 3
-#define PS_BITS 0
-#define MSB_BIT 5
-#define MSA_BIT 4
-#define ELSB_BIT 3
-#define ELSA_BIT 2
+    PORTD_PCR(0) &= ~((0b111<<MUX_BITS));
+    PORTD_PCR(0) |= (1<<MUX_BITS);
+    PORTD_PCR(15) &= ~((0b111<<MUX_BITS));
+    PORTD_PCR(15) |= (1<<MUX_BITS);
+    PORTD_PCR(16) &= ~((0b111<<MUX_BITS));
+    PORTD_PCR(16) |= (1<<MUX_BITS);
 
-//============================================================================
-// PWM (FTM + PWM) , PWM생성시에는 Flexible Timer 사용
-//============================================================================
+    GPIOD_PDDR |= (1<<PTD0) | (1<<PTD15) | (1<<PTD16);
+
+}
+
+void ADC0_init(void)
+{
+    PCC_ADC0 &= ~(PCC_CGC_MASK);
+    PCC_ADC0 &= ~((0b111)<<PCS_BITS);
+    PCC_ADC0 |= ((0b001)<<PCS_BITS);
+    PCC_ADC0 |= PCC_CGC_MASK;
+
+    ADC0_SC1A |= ((0b111111)<<ADCH_BITS);
+    //0번 ADC모듈에 슬롯 추가하고 싶으면 여기서 ADC0_SC1X (X = A~P) 추가.
+    //이후 ADC_start에서 슬롯에 채널 할당
+    //이후 read adc 함수내부에서 슬롯 마다 결과 읽어서 리턴
+    ADC0_CFG1 &= ~((0b11)<<ADIV_BITS);
+    ADC0_CFG1 &= ~((0b11)<<MODE_BITS);
+    ADC0_CFG1 |= ((0b01)<<MODE_BITS);
+
+    ADC0_CFG2 &= ~(255<<SMPLTS_BITS);
+    ADC0_CFG2 |= (12<<SMPLTS_BITS);
+
+    ADC0_SC2 &= ~(1<<ADTRG_BIT);
+}
+
+void adc_start(void)
+{
+    //// 슬롯 A: SE12 (가변저항)
+    ADC0_SC1A &= ~((0b1111111)<<ADCH_BITS);
+    ADC0_SC1A |= (15<<ADCH_BITS);
+}
+
+uint32_t read_adc_chx(void)
+{
+    while ((ADC0_SC1A & (1<<COCO_BIT))==0){}
+
+    return ADC0_RA;
+}
+
+void SOSC_init_8MHz(void)
+{
+    /*!
+     * SOSC Initialization (8 MHz):
+     * ===================================================
+     */
+    SCG->SOSCDIV = SCG_SOSCDIV_SOSCDIV1(1) |
+                   SCG_SOSCDIV_SOSCDIV2(1);    /* Divide by 1 */
+
+    SCG->SOSCCFG = SCG_SOSCCFG_RANGE(2) |       /* Medium frequency range (8MHz~40MHz) */
+                   SCG_SOSCCFG_EREFS_MASK;      /* External crystal */
+
+    while (SCG->SOSCCSR & SCG_SOSCCSR_LK_MASK); /* Wait until unlocked */
+
+    SCG->SOSCCSR = SCG_SOSCCSR_SOSCEN_MASK;     /* Enable system oscillator */
+
+    while (!(SCG->SOSCCSR & SCG_SOSCCSR_SOSCVLD_MASK)); /* Wait until SOSC is valid */
+}
+
+void SPLL_init_160MHz(void)
+{
+    /*!
+     * SPLL Initialization (160 MHz):
+     * ===================================================
+     */
+    while (SCG->SPLLCSR & SCG_SPLLCSR_LK_MASK);     /* Ensure SPLL control register is unlocked */
+    SCG->SPLLCSR &= ~SCG_SPLLCSR_SPLLEN_MASK;       /* Disable SPLL before configuration */
+
+    SCG->SPLLDIV |= SCG_SPLLDIV_SPLLDIV1(2) |       /* Divide by 2 */
+                    SCG_SPLLDIV_SPLLDIV2(3);        /* Divide by 3 */
+
+    SCG->SPLLCFG = SCG_SPLLCFG_MULT(24);            /* Multiply factor = 24 (160 MHz output) */
+
+    while (SCG->SPLLCSR & SCG_SPLLCSR_LK_MASK);     /* Wait until register is unlocked */
+    SCG->SPLLCSR |= SCG_SPLLCSR_SPLLEN_MASK;        /* Enable SPLL */
+
+    while (!(SCG->SPLLCSR & SCG_SPLLCSR_SPLLVLD_MASK)); /* Wait until SPLL is valid */
+}
 
 
+void NormalRUNmode_80MHz(void)
+{
 
-//============================================================================
-// External Clock
-//============================================================================
+    SCG->SIRCDIV = SCG_SIRCDIV_SIRCDIV1(1) |
+                   SCG_SIRCDIV_SIRCDIV2(1);
 
-void SOSC_init_8MHz(void);
-void SPLL_init_160MHz(void);
-void NormalRUNmode_80MHz(void);
+    SCG->RCCR = SCG_RCCR_SCS(6) |            /* Select PLL as clock source */
+                SCG_RCCR_DIVCORE(0b01) |     /* DIVCORE=1 → divide by 2 → Core clock = 80 MHz */
+                SCG_RCCR_DIVBUS(0b01)  |     /* DIVBUS=1 → divide by 2 → Bus clock = 40 MHz */
+                SCG_RCCR_DIVSLOW(0b10);      /* DIVSLOW=2 → divide by 3 → SCG slow, flash clock = 26.6 MHz */
 
-//============================================================================
-// External Clock
-//============================================================================
-
-#endif
+    while (((SCG->CSR & SCG_CSR_SCS_MASK) >> SCG_CSR_SCS_SHIFT) != 6)
+    {
+        /* Wait until PLL is selected as clock source */
+    }
+}
