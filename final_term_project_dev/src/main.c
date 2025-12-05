@@ -66,7 +66,7 @@ int main(void)
         // [2] 스텝 모터 / 방향지시등 제어
         if (g_left_request)
         {
-            run_left_sequential();      // 내부에서 끝나면 g_left_request = false; 해주는 구조 추천
+            run_left_sequential();
         }
         else if (g_right_request)
         {
