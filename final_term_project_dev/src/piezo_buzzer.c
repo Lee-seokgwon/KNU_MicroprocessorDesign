@@ -80,7 +80,7 @@ void piezo_playMelody(const char* song)
 // 떳다떳다비행기 노래 재생
 void piezo_playAirplane(void)
 {
-    uint32_t d = 20;   // 음 길이 20ms
+    uint32_t d = 10;   // 음 길이 20ms
 
     // 미 레 도 레
     piezo_playNote(659, d);  // 미
@@ -104,4 +104,23 @@ void piezo_playAirplane(void)
     piezo_playNote(659, d);
 
     piezo_noTone();
+}
+
+void piezo_playElije(void)
+{
+    uint32_t d = 10;   // 음 길이(ms) — 필요하면 조절
+
+    // 엘리제를 위하여 (첫 구절)
+    piezo_playNote(659, d);  // E5
+    piezo_playNote(622, d);  // D#5
+    piezo_playNote(659, d);  // E5
+    piezo_playNote(622, d);  // D#5
+    piezo_playNote(659, d);  // E5
+    piezo_playNote(494, d);  // B4
+    piezo_playNote(587, d);  // D5
+    piezo_playNote(523, d);  // C5
+    piezo_playNote(440, d); // A4 (조금 길게)
+
+    piezo_noTone();
+
 }

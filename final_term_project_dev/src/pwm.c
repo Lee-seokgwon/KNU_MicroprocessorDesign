@@ -1,5 +1,5 @@
-#include "inc/common.h"
-#include "inc/pwm.h"
+#include "common.h"
+#include "pwm.h"
 
 void FTM0_CH1_PWM(void)
 {

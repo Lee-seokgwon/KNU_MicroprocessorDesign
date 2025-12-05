@@ -29,6 +29,8 @@ void run_left_sequential(void)
 
     GPIOD_PDOR |= 0xFF;
     GPIOB_PDOR &= ~0xF0;
+
+    g_left_request = false; //수행 후 플래그 초기화
 }
 
 void run_right_sequential(void)
@@ -52,4 +54,5 @@ void run_right_sequential(void)
 
     GPIOD_PDOR |= 0xFF;
     GPIOB_PDOR &= ~0xF0;
+    g_right_request = false; //수행 후 플래그 초기화
 }

@@ -51,6 +51,10 @@
 #define IRQC_BITS       16
 #define ISF_BIT         24
 
+#define PTA6 6
+#define PTA7 7
+#define PTA8 8
+#define PTA9 9
 
 #define PTB0 0
 #define PTB1 1
@@ -63,6 +67,7 @@
 
 #define PTC12 12
 #define PTC13 13
+#define PTC17 17
 
 #define PTD0 0
 #define PTD15 15
