@@ -7,3 +7,46 @@ git checkout -b son
 
 
 -b로 새 브랜치 생성해준다
+
+git push origin son
+
+
+좌깜/우깜
+하드웨어 핀 
+예전: PTB0~PTB3 사용
+GPIOB_PDOR = (GPIOB_PDOR & ~0x0F) | (seq & 0x0F);
+현재: PTB4~PTB7 사용
+
+PTC12,13  좌깜우깜용 버튼
+
+
+// (내부 음계는 노래 정해지면 추후 수정)
+void piezo_playMelody(const char* song)
+
+여기서 노래 AA, BB , CC 다 짜줌
+
+
+내가 한것
+좌깜우깜코드 main에 구현
+
+
+
+CDS 센서 연결 포트:
+포트: PTC17
+
+
+피에조 부저 연결 포트:
+포트: PTD16 (Port D
+
+
+
+처음에 합친이후로 CDS가 검증이 되지 않았다. 이걸 직접 검증하였다. 
+
+
+cds 채널이 잘못되어있어서 다시 ADC 채널15인데 12로 잘못해놨었다. 수정완료
+
+
+
+추가한 내용.
+final_term_project_dev\src\piezo_buzzer.c
+여기에 delay로 소리 내주는 코드 추가함. 
