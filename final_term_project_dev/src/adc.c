@@ -3,26 +3,27 @@
 
 void ADC0_init(void)
 {
-    // 1. ADC0 클럭 선택 & Enable
-    PCC_ADC0 &= ~(PCC_CGC_MASK);
-    PCC_ADC0 &= ~((0b111U)<<PCS_BITS);
-    PCC_ADC0 |=  ((0b001U)<<PCS_BITS);   // PCS = SOSCDIV2 (예: 8MHz/2 등)
-    PCC_ADC0 |=  PCC_CGC_MASK;
+    // 예제 코드와 완전히 동일한 방식으로 초기화
+    // 1. ADC0 클럭 설정
+    PCC_ADC0 &= ~(1 << CGC_BIT);  // 먼저 클럭 비활성화
+    PCC_ADC0 &= ~((0b111) << PCS_BITS);
+    PCC_ADC0 |=  ((0b001) << PCS_BITS);   // SOSC 선택
+    PCC_ADC0 |=  (1 << CGC_BIT);  // 클럭 활성화
 
-    // 2. SC1A 초기값: 채널 disable (ADCH=31, 0x1F)
-    ADC0_SC1A |= ((0b111111)<<ADCH_BITS);
+    // 2. ADC 비활성화 (채널 disable)
+    ADC0_SC1A |= ((0b111111) << ADCH_BITS);
 
-    // 3. CFG1: 분주=1(기본), 12비트 모드
-    ADC0_CFG1 &= ~((0b11U)<<ADIV_BITS);
-    ADC0_CFG1 &= ~((0b11U)<<MODE_BITS);
-    ADC0_CFG1 |=  ((0b01U)<<MODE_BITS);  // MODE=01 → 12bit
+    // 3. 12비트 해상도, 클럭 분주
+    ADC0_CFG1 &= ~((0b11) << ADIV_BITS);
+    ADC0_CFG1 &= ~((0b11) << MODE_BITS);
+    ADC0_CFG1 |=  ((0b01) << MODE_BITS);  // 12-bit 해상도
 
-    // 4. CFG2: 샘플 타임 설정
-    ADC0_CFG2 &= ~(255<<SMPLTS_BITS);
-    ADC0_CFG2 |=  (12U<<SMPLTS_BITS);    // 12 ADC clock 사이 샘플
+    // 4. 샘플링 시간 설정
+    ADC0_CFG2 &= ~(255 << SMPLTS_BITS);
+    ADC0_CFG2 |=  (12 << SMPLTS_BITS);
 
-    // 5. SC2: SW trigger 사용 (ADTRG=0)
-    ADC0_SC2 &= ~(1U<<ADTRG_BIT);
+    // 5. 소프트웨어 트리거 선택
+    ADC0_SC2 &= ~(1 << ADTRG_BIT);
 }
 
 
@@ -40,4 +41,26 @@ uint16_t ADC0_ReadChannel(void)
     }
 
     return (uint16_t)ADC0_RA;   // 0 ~ 4095 (12bit)
+}
+
+// 가변저항 읽기 (PTC14/C14 핀 → ADC0_SE12 사용)
+// 예제 코드와 완전히 동일한 방식
+void adc_start_potentiometer(void)
+{
+    // 예제 코드와 동일: 채널 설정 및 변환 시작
+    // PTC14 (C14 핀) = ADC0_SE12 (채널 12)
+    ADC0_SC1A &= ~((0b111111) << ADCH_BITS);  // 6비트 클리어
+    ADC0_SC1A |= (ADC0_SE12 << ADCH_BITS);    // ADC0_SE12 = 채널 12
+}
+
+uint16_t read_potentiometer(void)
+{
+    // 예제 코드와 완전히 동일한 방식
+    adc_start_potentiometer();
+    
+    // 변환 완료 대기 (예제 코드와 동일)
+    while ((ADC0_SC1A & (1 << COCO_BIT)) == 0) {}
+    
+    // 변환 결과 읽기 (12bit ADC: 0~4095)
+    return (uint16_t)ADC0_RA;
 }

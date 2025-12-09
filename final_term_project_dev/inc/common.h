@@ -64,9 +64,12 @@
 #define PTB5 5
 #define PTB6 6
 #define PTB7 7
+#define PTB10 10
+#define PTB11 11
 
 #define PTC12 12
 #define PTC13 13
+#define PTC14 14
 #define PTC17 17
 
 #define PTD0 0
@@ -281,6 +284,7 @@
 #define FTM2_MOD    (*(volatile unsigned*)(FTM2_BASE + 0x8))
 #define FTM2_C0SC   (*(volatile unsigned*)(FTM2_BASE + 0x0C))
 #define FTM2_C0V    (*(volatile unsigned*)(FTM2_BASE + 0x10))
+#define FTM2_C1SC   (*(volatile unsigned*)(FTM2_BASE + 0x14))
 #define FTM2_C1V    (*(volatile unsigned*)(FTM2_BASE + 0x18))
 #define FTM2_CNTIN  (*(volatile unsigned*)(FTM2_BASE + 0x4C))
 
