@@ -4,7 +4,7 @@
 #define TRIG_PIN 9 //D9
 #define ECHO_PIN 11 //D11
 
-static void ultrasonic_short_delay(volatile uint32_t cnt)
+void ultrasonic_short_delay(volatile uint32_t cnt)
 {
     while(cnt--) __asm("NOP");
 }

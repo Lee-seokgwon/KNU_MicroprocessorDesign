@@ -1,5 +1,5 @@
-#include "inc/common.h"
-#include "inc/sequential_turn_light.h"
+#include "common.h"
+#include "sequential_turn_light.h"
 
 bool g_left_request  = false;
 bool g_right_request = false;
