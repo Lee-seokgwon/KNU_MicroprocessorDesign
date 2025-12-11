@@ -1,8 +1,10 @@
 2025 경북대 전자공학부 마이크로프로세서설계실험
 (nxp s32k144 EVB) (URE_1040 Cortex-M4F/M0+ EDU KIT)
 
+브랜치 변경
+git checkout son
 
-자주쓰는 명령어
+자주쓰는 명령어 // -b는 생성까지 해줌줌
 git checkout -b son
 
 
