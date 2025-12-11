@@ -3,7 +3,6 @@
 #include "pwm.h"
 #include "piezo_buzzer.h"
 #include "ultrasonic.h"
-#include "dcmotor.h"
 #include "lcd.h"
 
 // 디버깅용 지연 함수 (80MHz 기준)
@@ -34,13 +33,35 @@ int main(void)
     PORTC_PCR(PTC14) &= ~((0b111) << MUX_BITS);  // MUX 클리어
     PORTC_PCR(PTC14) |=  ((0b000) << MUX_BITS);  // MUX=000: ADC 기능 (Analog)
     
+    // PORTB 클럭 (모터 방향 제어용 B10, B11)
+    PCC_PORTB |= (1 << CGC_BIT);
+    
+    // PORTD 클럭 (PWM 출력용 D10)
+    PCC_PORTD |= (1 << CGC_BIT);
+    
+    // B10, B11 GPIO 설정 (모터 방향)
+    PORTB_PCR(PTB10) &= ~((0b111) << MUX_BITS);
+    PORTB_PCR(PTB10) |=  ((0b001) << MUX_BITS);  // GPIO
+    PORTB_PCR(PTB11) &= ~((0b111) << MUX_BITS);
+    PORTB_PCR(PTB11) |=  ((0b001) << MUX_BITS);  // GPIO
+    
+    GPIOB_PDDR |= (1 << PTB10) | (1 << PTB11);
+    GPIOB_PCOR |= (1 << PTB10) | (1 << PTB11);
+    
+    // D10 PWM 설정 (FTM2_CH0)
+    PORTD_PCR(10) &= ~((0b111) << MUX_BITS);
+    PORTD_PCR(10) |=  ((0b010) << MUX_BITS);  // FTM2_CH0
+    
     ADC0_init();                    // ADC 초기화
     piezo_port_init();              // 피에조 부저 초기화
     ultrasonic_port_init();         // 초음파 센서 초기화
-    DcMotor_init();                 // DC 모터 초기화 (FTM2 포함)
     lcd_port_init();                // LCD 초기화
     
     FTM0_CH1_PWM();                 // 피에조용 PWM (FTM0)
+    FTM2_CH0_PWM();                 // DC 모터용 PWM (FTM2_CH0)
+    
+    // 초음파 센서 안정화 대기
+    debug_delay_ms(100);
 
     /* ============================
        디버깅 테스트 시작
@@ -103,15 +124,49 @@ int main(void)
         else if (pot_value < 2730) mode = 1;  // 1365~2730: 중립
         else                        mode = 2;  // 2730~4095: 후진
         
-        // REVERSE 모드로 진입할 때 "엘리제를 위하여" 재생
+        // REVERSE 모드로 진입할 때 "엘리제를 위하여" 재생 (main_3.c 방식)
         if (mode == 2 && prev_mode != 2)  // REVERSE 모드로 진입
         {
-            piezo_playElije();  // 엘리제를 위하여 재생
+            // 재생 중에는 모터 정지 상태 유지
+            GPIOB_PCOR |= (1 << PTB10);
+            GPIOB_PCOR |= (1 << PTB11);
+            FTM2_C0V = 0;
+            
+            // LCD에 재생 중 메시지 표시
+            lcd_clear();
+            lcd_set_cursor(0, 0);
+            lcd_print_string("Playing...");
+            lcd_set_cursor(1, 0);
+            lcd_print_string("Elije");
+            
+            // 엘리제를 위하여 재생 (블로킹 - 재생 완료까지 대기)
+            piezo_playElije();
         }
         
-        // REVERSE 모드일 때 DC 모터 후진
-        if (mode == 2)  // REVERSE 모드
+        // 모터 제어 로직 (main_4.c 방식 적용)
+        uint32_t pwm_value = 0;
+        
+        if (mode == 0)  // 전진 모드
         {
+            // 방향: 전진 (B10 High, B11 Low)
+            GPIOB_PSOR |= (1 << PTB10);
+            GPIOB_PCOR |= (1 << PTB11);
+            
+            // 속도 설정 (50% 듀티: 16000 중 8000)
+            pwm_value = 8000;
+            
+            lcd_set_cursor(1, 0);
+            lcd_print_string("FORWARD");
+        }
+        else if (mode == 2)  // REVERSE 모드
+        {
+            // 방향: 후진 (B10 Low, B11 High)
+            GPIOB_PCOR |= (1 << PTB10);
+            GPIOB_PSOR |= (1 << PTB11);
+            
+            // 초음파 센서 측정 전 딜레이 (센서 안정화)
+            debug_delay_ms(50);
+            
             // 초음파 센서로 거리 측정
             uint32_t distance = ultrasonic_measure_distance_cm();
             
@@ -135,7 +190,10 @@ int main(void)
             // 30cm 이하일 때 급제동
             if (distance <= 30)
             {
-                DcMotor_stop();  // 급제동
+                // 모터 드라이버 정지 (B10 Low, B11 Low)
+                GPIOB_PCOR |= (1 << PTB10);
+                GPIOB_PCOR |= (1 << PTB11);
+                pwm_value = 0;  // PWM 끄기
                 motor_running = 0;
                 
                 lcd_set_cursor(1, 0);
@@ -143,35 +201,45 @@ int main(void)
             }
             else
             {
-                // 30cm 이상이면 후진 계속
-                DcMotor_run_reverse(8000);  // 후진 (50% 듀티: 16000 중 8000)
+                // 30cm 이상이면 후진 계속 (50% 듀티: 16000 중 8000)
+                pwm_value = 8000;
                 motor_running = 1;
                 
                 lcd_set_cursor(1, 0);
                 lcd_print_string("REVERSE");
             }
+            
+            // 초음파 센서 측정 후 딜레이 (센서 안정화)
+            debug_delay_ms(50);
         }
-        else
+        else  // 중립 모드 (mode == 1)
         {
-            // REVERSE 모드가 아니면 모터 정지
-            DcMotor_stop();
+            // 모터 드라이버 정지 (B10 Low, B11 Low)
+            GPIOB_PCOR |= (1 << PTB10);
+            GPIOB_PCOR |= (1 << PTB11);
+            pwm_value = 0;  // PWM 끄기
             motor_running = 0;
             
             lcd_set_cursor(1, 0);
-            if (mode == 0) 
-            {
-                lcd_print_string("FORWARD");
-            }
-            else 
-            {
-                lcd_print_string("NEUTRAL");
-            }
+            lcd_print_string("NEUTRAL");
         }
+        
+        // PWM 적용 (최대값 제한 안전장치)
+        if(pwm_value > 16000) pwm_value = 16000;
+        FTM2_C0V = pwm_value;
         
         // 이전 모드 업데이트
         prev_mode = mode;
         
-        debug_delay_ms(100);  // 0.1초마다 업데이트 (빠른 반응)
+        // 모드에 따라 다른 딜레이 (후진 모드에서는 초음파 센서 측정 시간 고려)
+        if (mode == 2)
+        {
+            debug_delay_ms(150);  // 후진 모드: 초음파 센서 측정 시간 고려하여 더 긴 딜레이
+        }
+        else
+        {
+            debug_delay_ms(100);  // 전진/중립 모드: 0.1초마다 업데이트
+        }
     }
     
     /* ============================================
