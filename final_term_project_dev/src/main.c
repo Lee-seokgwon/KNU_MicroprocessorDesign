@@ -1,77 +1,100 @@
+#include "S32K144.h"
 #include "common.h"
-#include "adc.h"
-#include "cds.h"
-#include "interrupt.h"
-#include "pwm.h"
-#include "piezo_buzzer.h"
-#include "sequential_turn_light.h"
-#include "step_motor.h"
-#include "step_motor_and_turn_light_controller.h"
-#include "ultrasonic.h"
+#include "lcd.h"
+#include "humid.h"
+
+
 
 int main(void)
 {
-    /* ============================
-       Clock & System Init
-       ============================ */
+    uint32_t hum = 0u;
+    uint32_t temp = 0u;
+
+    /* Clock 초기화 */
     SOSC_init_8MHz();
     SPLL_init_160MHz();
     NormalRUNmode_80MHz();
 
-    /* ============================
-       Peripheral Init
-       ============================ */
-    ADC0_init();                        // ADC
-    sequential_turn_light_led_init();   // LED
-    sequential_turn_light_switch_init();// SW
-    sequential_turn_light_port_init();  // Port multiplexer
+    /* DHT11 초기화 */
+    humid_init();
 
-    step_motor_port_init();             // Step motor control pins
+    /* LCD 초기화 */
+    lcd_port_init();
 
-    piezo_port_init();                  // Piezo buzzer GPIO init
+    /* 초기화 메시지 표시 */
+    lcd_clear();
+    lcd_set_cursor(0, 0);
+    lcd_print_string("Humid Temp Sensor");
+    lcd_set_cursor(1, 0);
+    lcd_print_string("Initializing...");
+    delay_ms(2000u);
 
-    ultrasonic_port_init();             // ultrasonic port init
-    NVIC_init_IRQs();                   // Interrupt controller init
+    /* 센서 안정화 대기 (최소 2초) */
+    delay_ms(2000u);
 
-    FTM0_CH1_PWM();                     // Optional: PWM channel init
-
-    /* ============================
-       Main Loop
-       ============================ */
-    int is_bright_prev = -1; // 초기 상태
-
-    while (1)
+    /* Main Loop */
+    for (;;)
     {
-        adc_start();
-        uint16_t cds = read_cds();
-        int is_bright_current = (cds > 2000); // 밝음: 1, 어두움: 0
-
-        // [1] 현재 깜빡이/스텝모터 요청이 없을 때만 노래 재생
-        if (!g_left_request && !g_right_request)
+        /* DHT11 데이터 읽기 (매번 새로운 데이터 읽기) */
+        uint8_t success = humid_get_data(&hum, &temp);
+        
+        /* 읽기 성공한 경우에만 LCD 업데이트 */
+        if (success == 0)
         {
-            if (is_bright_current != is_bright_prev)
+            /* 체크섬 오류 - 에러 메시지 표시 */
+            lcd_clear();
+            lcd_set_cursor(0, 0);
+            lcd_print_string("Read Error!");
+            lcd_set_cursor(1, 0);
+            lcd_print_string("Retrying...");
+            
+            /* 2초 대기 후 다시 시도 */
+            volatile uint32_t del = 0u;
+            while (del < 1000000u)
             {
-                if (is_bright_current)
-                {
-                    piezo_playAirplane();   // 블로킹 OK: 모터 안 돌 때만 실행
-                }
-                else
-                {
-                    piezo_playElije();
-                }
-                is_bright_prev = is_bright_current;
+                del++;
             }
+            continue;  /* 다시 읽기 시도 */
         }
 
-        // [2] 스텝 모터 / 방향지시등 제어
-        if (g_left_request)
+        /* LCD에 습도 표시 */
+        lcd_clear();
+        lcd_set_cursor(0, 0);
+        lcd_print_string("Humidity: ");
+
+        /* 습도 값 표시 (2자리 숫자) */
+        if (hum < 10u)
         {
-            run_left_sequential();
+            lcd_data(' ');
+            lcd_data('0' + (uint8_t)hum);
         }
-        else if (g_right_request)
+        else
         {
-            run_right_sequential();
+            lcd_data('0' + (uint8_t)((hum / 10u) % 10u));
+            lcd_data('0' + (uint8_t)(hum % 10u));
         }
+        lcd_print_string("%");
+
+        /* LCD에 온도 표시 */
+        lcd_set_cursor(1, 0);
+        lcd_print_string("Temp: ");
+
+        /* 온도 값 표시 (2자리 숫자) */
+        if (temp < 10u)
+        {
+            lcd_data(' ');
+            lcd_data('0' + (uint8_t)temp);
+        }
+        else
+        {
+            lcd_data('0' + (uint8_t)((temp / 10u) % 10u));
+            lcd_data('0' + (uint8_t)(temp % 10u));
+        }
+        lcd_print_string("C");
+
+        /* 2초 대기 (DHT11은 최소 2초 간격으로 읽어야 함) */
+        /* 이 딜레이 후 루프가 다시 시작되어 새로운 데이터를 읽습니다 */
+        delay_ms(2000u);
     }
 
     return 0;

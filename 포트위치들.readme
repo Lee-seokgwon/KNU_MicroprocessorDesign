@@ -1,0 +1,39 @@
+
+      J3                                    J2
+PTB6                              PTE10 / PTA3     NC
+PTB7                              PTE11 / PTA2     NC
+PTE9     PTA5                                      PTA14
+PTE5                                               PTE7
+PTE3                              PTB2             PTC13
+PTA10                             PTB3             PTC12
+PTA4                              PTB4             PTE8
+                                  PTB5             PTD0
+                                  PTD14            PTD16
+                                  PTD13            PTD15
+
+     J4                                       J1
+PTC7     PTD4                     PTC11 / PTE8     PTE3
+PTC6     PTB12                    PTC10 / PTC3     PTD3
+PTB17    PTB0                     PTB11            PTD5
+PTB16    PTB1                     PTB10            PTD12
+PTB15    PTA6 / PTE11 / PTA2      PTB9             PTD11
+PTB14    PTC0 / PTE10 / PTA3      PTB8             PTD10
+PTC4     PTE2                     PTA3             PTA17
+PTC3     PTE6                     PTA2             PTA11
+
+      J5                                J6
+PTE16     PTA15 / PTD11           PTA9     PTE4
+PTE15     PTA16 / PTD10           PTA8     PTE5
+PTE14     PTA1                    PTE12    PTA12
+PTE13     PTA0                    PTD17    PTA13
+          PTA7                    PTC9     
+          PTB13                   PTC8     
+PTE1      PTC1                    PTD8     PTC16
+PTD7      PTC2                    PTD9     PTC17
+PTD6      NC                      PTD2     PTD3
+PTC15     NC                      PTD0     PTD1
+
+
+
+
+
