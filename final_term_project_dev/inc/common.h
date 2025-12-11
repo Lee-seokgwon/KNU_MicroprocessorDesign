@@ -56,10 +56,10 @@
 #define PTB1 1
 #define PTB2 2
 #define PTB3 3
-#define PTB4 3
-#define PTB5 3
-#define PTB6 3
-#define PTB7 3
+#define PTB4 4
+#define PTB5 5
+#define PTB6 6
+#define PTB7 7
 
 #define PTC12 12
 #define PTC13 13

@@ -44,6 +44,24 @@ CDS 센서 연결 포트:
 
 
 cds 채널이 잘못되어있어서 다시 ADC 채널15인데 12로 잘못해놨었다. 수정완료
+common.h에
+#define PTB0 0
+#define PTB1 1
+#define PTB2 2
+#define PTB3 3
+#define PTB4 3
+#define PTB5 3
+#define PTB6 3
+#define PTB7 3
+이거 위처럼 되어있어서 아래처럼 수정함. 
+#define PTB0 0
+#define PTB1 1
+#define PTB2 2
+#define PTB3 3
+#define PTB4 4
+#define PTB5 5
+#define PTB6 6
+#define PTB7 7
 
 
 

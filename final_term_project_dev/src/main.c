@@ -39,13 +39,13 @@ int main(void)
        ============================ */
     #define CDS_THRESHOLD 1000
     bool prev_dark = false;  // 이전 상태 (1000 이상이면 true)
-    
+
     while (1)
     {
         // CDS 센서 값 읽기
         uint16_t cds_value = read_cds();
         bool is_dark = (cds_value >= CDS_THRESHOLD);
-        
+
         // 상태 변화 감지
         if (is_dark && !prev_dark)
         {
@@ -59,7 +59,7 @@ int main(void)
             piezo_playMelody("BB");
             prev_dark = false;
         }
-        
+
 
 
         // 좌깜우깜 버튼 감지
@@ -77,24 +77,37 @@ int main(void)
 
 
 
-        // 초음파 시퀀셜 검증
-        uint32_t distance = ultrasonic_measure_distance_cm();
+      //   // 초음파 시퀀셜 검증
+      uint32_t distance = ultrasonic_measure_distance_cm();
 
-        if (distance < 50)
-        {
-            // 50cm 이내면 오른쪽으로
-            run_right_sequential();
-        }
-        else
-        {
-            // 50cm 이상이면 왼쪽으로
-            run_left_sequential();
-        }
+      //   if (distance < 50)
+      //   {
+      //       // 50cm 이내면 오른쪽으로
+      //       run_right_sequential();
+      //   }
+      //   else
+      //   {
+      //       // 50cm 이상이면 왼쪽으로
+      //       run_left_sequential();
+      //   }
 
-        // 다음 측정 전 약간의 딜레이
-        for (volatile uint32_t i = 0; i < 1000000; i++);
+      //   // 다음 측정 전 약간의 딜레이
+      //   for (volatile uint32_t i = 0; i < 1000000; i++);
 
 
+        // 거리에 비례해서 간격 조절
+      if (distance < 150)
+      {
+         // 거리가 가까울수록 간격이 짧아짐
+         uint32_t interval = (distance * 3);  // 거리 * 3ms
+         if (interval < 50) interval = 50;    // 최소 50ms
+         if (interval > 1000) interval = 1000; // 최대 1000ms
+
+         piezo_playTone(1500);  // 고정 주파수
+         piezo_delay_ms(100);
+         piezo_noTone();
+         piezo_delay_ms(interval);
+      }
     }
 
     return 0;
