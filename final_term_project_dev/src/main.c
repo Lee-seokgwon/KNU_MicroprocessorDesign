@@ -99,6 +99,44 @@ int main(void)
         }
         lcd_print_string("cm");
 
+        
+        //VR
+        uint16_t pot_value = read_potentiometer();
+        // LCD에 가변저항 값 표시
+        lcd_clear();
+        lcd_set_cursor(0, 0);
+        lcd_print_string("Pot:");
+        
+        // 4자리 숫자 표시
+        lcd_data('0' + (pot_value / 1000) % 10);
+        lcd_data('0' + (pot_value / 100) % 10);
+        lcd_data('0' + (pot_value / 10) % 10);
+        lcd_data('0' + pot_value % 10);
+        
+        // 3단계 구분 (0~4095 범위)
+        uint8_t mode = 0;  // 0:전진, 1:중립, 2:후진
+        if (pot_value < 1365)      mode = 0;  // 0~1365: 전진
+        else if (pot_value < 2730) mode = 1;  // 1365~2730: 중립
+        else                        mode = 2;  // 2730~4095: 후진
+        
+        // REVERSE 모드로 진입할 때 "엘리제를 위하여" 재생 (main_3.c 방식)
+        if (mode == 2 && prev_mode != 2)  // REVERSE 모드로 진입
+        {
+            // 재생 중에는 모터 정지 상태 유지
+            GPIOB_PCOR |= (1 << PTB10);
+            GPIOB_PCOR |= (1 << PTB11);
+            FTM2_C0V = 0;
+            
+            // LCD에 재생 중 메시지 표시
+            lcd_clear();
+            lcd_set_cursor(0, 0);
+            lcd_print_string("Playing...");
+            lcd_set_cursor(1, 0);
+            lcd_print_string("Elije");
+            
+            // 엘리제를 위하여 재생 (블로킹 - 재생 완료까지 대기)
+            piezo_playElije();
+        }
     }
 
     return 0;

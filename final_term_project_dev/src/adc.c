@@ -41,3 +41,25 @@ uint16_t ADC0_ReadChannel(void)
 
     return (uint16_t)ADC0_RA;   // 0 ~ 4095 (12bit)
 }
+
+// 가변저항 읽기 (PTC14/C14 핀 → ADC0_SE12 사용)
+// 예제 코드와 완전히 동일한 방식
+void adc_start_potentiometer(void)
+{
+    // 예제 코드와 동일: 채널 설정 및 변환 시작
+    // PTC14 (C14 핀) = ADC0_SE12 (채널 12)
+    ADC0_SC1A &= ~((0b111111) << ADCH_BITS);  // 6비트 클리어
+    ADC0_SC1A |= (ADC0_SE12 << ADCH_BITS);    // ADC0_SE12 = 채널 12
+}
+
+uint16_t read_potentiometer(void)
+{
+    // 예제 코드와 완전히 동일한 방식
+    adc_start_potentiometer();
+    
+    // 변환 완료 대기 (예제 코드와 동일)
+    while ((ADC0_SC1A & (1 << COCO_BIT)) == 0) {}
+    
+    // 변환 결과 읽기 (12bit ADC: 0~4095)
+    return (uint16_t)ADC0_RA;
+}
