@@ -38,19 +38,30 @@ void lcd_port_init(void)
     PCC_PORTC |= (1u << CGC_BIT);
 
     /* 2. 각 핀을 GPIO로 설정 */
-    PORTA_PCR(LCD_D0_PIN) = MUX_BITS;
-    PORTA_PCR(LCD_D1_PIN) = MUX_BITS;
-    PORTA_PCR(LCD_D2_PIN) = MUX_BITS;
-    PORTA_PCR(LCD_D3_PIN) = MUX_BITS;
+    PORTA_PCR(LCD_D0_PIN) &= ~((0b111) << MUX_BITS);
+    PORTA_PCR(LCD_D0_PIN) |=  ((0b001) << MUX_BITS);
+    PORTA_PCR(LCD_D1_PIN) &= ~((0b111) << MUX_BITS);
+    PORTA_PCR(LCD_D1_PIN) |=  ((0b001) << MUX_BITS);
+    PORTA_PCR(LCD_D2_PIN) &= ~((0b111) << MUX_BITS);
+    PORTA_PCR(LCD_D2_PIN) |=  ((0b001) << MUX_BITS);
+    PORTA_PCR(LCD_D3_PIN) &= ~((0b111) << MUX_BITS);
+    PORTA_PCR(LCD_D3_PIN) |=  ((0b001) << MUX_BITS);
 
-    PORTB_PCR(LCD_D4_PIN) = MUX_BITS;
-    PORTB_PCR(LCD_D5_PIN) = MUX_BITS;
-    PORTB_PCR(LCD_D6_PIN) = MUX_BITS;
-    PORTB_PCR(LCD_D7_PIN) = MUX_BITS;
+    PORTB_PCR(LCD_D4_PIN) &= ~((0b111) << MUX_BITS);
+    PORTB_PCR(LCD_D4_PIN) |=  ((0b001) << MUX_BITS);
+    PORTB_PCR(LCD_D5_PIN) &= ~((0b111) << MUX_BITS);
+    PORTB_PCR(LCD_D5_PIN) |=  ((0b001) << MUX_BITS);
+    PORTB_PCR(LCD_D6_PIN) &= ~((0b111) << MUX_BITS);
+    PORTB_PCR(LCD_D6_PIN) |=  ((0b001) << MUX_BITS);
+    PORTB_PCR(LCD_D7_PIN) &= ~((0b111) << MUX_BITS);
+    PORTB_PCR(LCD_D7_PIN) |=  ((0b001) << MUX_BITS);
 
-    PORTC_PCR(LCD_RS_PIN) = MUX_BITS;
-    PORTC_PCR(LCD_RW_PIN) = MUX_BITS;
-    PORTC_PCR(LCD_EN_PIN) = MUX_BITS;
+    PORTC_PCR(LCD_RS_PIN) &= ~((0b111) << MUX_BITS);
+    PORTC_PCR(LCD_RS_PIN) |=  ((0b001) << MUX_BITS);
+    PORTC_PCR(LCD_RW_PIN) &= ~((0b111) << MUX_BITS);
+    PORTC_PCR(LCD_RW_PIN) |=  ((0b001) << MUX_BITS);
+    PORTC_PCR(LCD_EN_PIN) &= ~((0b111) << MUX_BITS);
+    PORTC_PCR(LCD_EN_PIN) |=  ((0b001) << MUX_BITS);
 
     /* 3. 방향: 전부 출력 */
     GPIOA_PDDR |= (1u << LCD_D0_PIN) |
@@ -128,4 +139,34 @@ void lcd_data(uint8_t data)
     lcd_write_bus(data);
     lcd_enable_pulse();
     lcd_delay(20000);
+}
+
+void lcd_clear(void)
+{
+    lcd_cmd(0x01);
+    lcd_delay(200000);
+}
+
+void lcd_set_cursor(uint8_t row, uint8_t col)
+{
+    uint8_t addr = (row == 0) ? 0x80 : 0xC0;  // 첫 줄: 0x80, 둘째 줄: 0xC0
+    addr += col;
+    lcd_cmd(addr);
+}
+
+void lcd_print_string(const char* str)
+{
+    while (*str)
+    {
+        lcd_data(*str++);
+    }
+}
+void lcd_debug_delay_ms(uint32_t ms)
+{
+    volatile uint32_t count;
+    while (ms--)
+    {
+        count = 80000;  // 80MHz 기준 1ms
+        while (count--) __asm("nop");
+    }
 }

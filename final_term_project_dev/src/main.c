@@ -22,18 +22,25 @@ int main(void)
        Peripheral Init
        ============================ */
     ADC0_init();                        // ADC
+    ultrasonic_port_init();             //초음파 - 주석해제시 스탭모터 힘만 받고 안돎
+    lcd_port_init();                     //lcd - 주석해제시 스탭모터 힘만 받고 안돎
     sequential_turn_light_led_init();   // LED
     sequential_turn_light_switch_init();// SW
     sequential_turn_light_port_init();  // Port multiplexer
 
-    step_motor_port_init();             // Step motor control pins
-
     piezo_port_init();                  // Piezo buzzer GPIO init
-
-    ultrasonic_port_init();             // ultrasonic port init
+    step_motor_port_init();             // Step motor control pins
     NVIC_init_IRQs();                   // Interrupt controller init
 
     FTM0_CH1_PWM();                     // Optional: PWM channel init
+
+    // lcd 초기화
+    lcd_clear();
+    lcd_set_cursor(0, 0);
+    lcd_print_string("Debug Mode");
+    lcd_set_cursor(1, 0);
+    lcd_print_string("Initialized");
+    //lcd_debug_delay_ms(500); // 이거 주석해제하면 바로 피에조 삑 소리 지르기만함.
 
     /* ============================
        Main Loop
@@ -72,6 +79,26 @@ int main(void)
         {
             run_right_sequential();
         }
+
+        //초음파 , LCD 테스트
+        uint32_t distance = ultrasonic_measure_distance_cm();
+        // LCD에 거리 표시
+        lcd_set_cursor(0, 8);
+        lcd_print_string(" Dist:");
+        if (distance < 100)
+        {
+            lcd_data(' ');
+            lcd_data('0' + (distance / 10) % 10);
+            lcd_data('0' + distance % 10);
+        }
+        else
+        {
+            lcd_data('0' + (distance / 100) % 10);
+            lcd_data('0' + (distance / 10) % 10);
+            lcd_data('0' + distance % 10);
+        }
+        lcd_print_string("cm");
+
     }
 
     return 0;

@@ -15,9 +15,18 @@ void ultrasonic_port_init(void)
     /* PORTD clock enable */
     PCC_PORTD |= (1u << CGC_BIT);
 
+    // TRIG PIN: GPIO
+    PORTD_PCR(TRIG_PIN) &= ~((0b111) << MUX_BITS);  // 기존 MUX 삭제
+    PORTD_PCR(TRIG_PIN) |=  (0b001  << MUX_BITS);   // GPIO 선택
+
+    // ECHO PIN: GPIO
+    PORTD_PCR(ECHO_PIN) &= ~((0b111) << MUX_BITS);
+    PORTD_PCR(ECHO_PIN) |=  (0b001  << MUX_BITS);
+
     /* MUX 설정 */
-    PORTD_PCR(TRIG_PIN)  = (1u << MUX_BITS);
-    PORTD_PCR(ECHO_PIN)  = (1u << MUX_BITS);
+    //PORTD_PCR(TRIG_PIN)  = (1u << MUX_BITS);
+    //PORTD_PCR(ECHO_PIN)  = (1u << MUX_BITS);
+
 
     /* Echo Pull-down */
     PORTD_PCR(ECHO_PIN) |= (1u << 1);   // PE
