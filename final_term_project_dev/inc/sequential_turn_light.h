@@ -2,8 +2,8 @@
 #define SEQUENTIALTURNLIGHT_H
 
 //interrupt.c 에 공유하는 변수
-extern bool g_left_request;
-extern bool g_right_request;
+extern volatile bool g_left_request;
+extern volatile bool g_right_request;
 extern unsigned char SEQUENTIAL_LIGHT_PATTERN_LEFT[9];
 extern unsigned char SEQUENTIAL_LIGHT_PATTERN_RIGHT[9];
 

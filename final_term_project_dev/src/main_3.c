@@ -1,17 +1,13 @@
 #include "common.h"
+#include "adc.h"
+#include "cds.h"
+#include "interrupt.h"
+#include "pwm.h"
 #include "piezo_buzzer.h"
-#include "lcd.h"
-
-// 디버깅용 지연 함수 (80MHz 기준)
-void debug_delay_ms(uint32_t ms)
-{
-    volatile uint32_t count;
-    while (ms--)
-    {
-        count = 80000;  // 80MHz 기준 1ms
-        while (count--) __asm("nop");
-    }
-}
+#include "sequential_turn_light.h"
+#include "step_motor.h"
+#include "step_motor_and_turn_light_controller.h"
+#include "ultrasonic.h"
 
 int main(void)
 {
@@ -25,42 +21,58 @@ int main(void)
     /* ============================
        Peripheral Init
        ============================ */
-    piezo_port_init();              // 피에조 부저 초기화
-    lcd_port_init();                 // LCD 초기화
-    
-    FTM0_CH1_PWM();                  // 피에조용 PWM (FTM0)
+    ADC0_init();                        // ADC
+    sequential_turn_light_led_init();   // LED
+    sequential_turn_light_switch_init();// SW
+    sequential_turn_light_port_init();  // Port multiplexer
+
+    step_motor_port_init();             // Step motor control pins
+
+    piezo_port_init();                  // Piezo buzzer GPIO init
+
+    ultrasonic_port_init();             // ultrasonic port init
+    NVIC_init_IRQs();                   // Interrupt controller init
+
+    FTM0_CH1_PWM();                     // Optional: PWM channel init
 
     /* ============================
-       엘리제를 위하여 테스트
+       Main Loop
        ============================ */
-    
-    // 초기화 완료 메시지
-    lcd_clear();
-    lcd_set_cursor(0, 0);
-    lcd_print_string("Piezo Test");
-    lcd_set_cursor(1, 0);
-    lcd_print_string("Elije Song");
-    debug_delay_ms(2000);
+    int is_bright_prev = -1; // 초기 상태
 
-    // 무한 루프로 반복 재생
-    while(1)
+    while (1)
     {
-        lcd_clear();
-        lcd_set_cursor(0, 0);
-        lcd_print_string("Playing...");
-        lcd_set_cursor(1, 0);
-        lcd_print_string("Elije");
-        
-        // 엘리제를 위하여 재생
-        piezo_playElije();
-        
-        // 재생 완료 후 1초 대기
-        lcd_clear();
-        lcd_set_cursor(0, 0);
-        lcd_print_string("Finished");
-        debug_delay_ms(1000);
+        adc_start();
+        uint16_t cds = read_cds();
+        int is_bright_current = (cds > 2000); // 밝음: 1, 어두움: 0
+
+        // [1] 현재 깜빡이/스텝모터 요청이 없을 때만 노래 재생
+        if (!g_left_request && !g_right_request)
+        {
+            if (is_bright_current != is_bright_prev)
+            {
+                if (is_bright_current)
+                {
+                    piezo_playAirplane();   // 블로킹 OK: 모터 안 돌 때만 실행
+                }
+                else
+                {
+                    piezo_playElije();
+                }
+                is_bright_prev = is_bright_current;
+            }
+        }
+
+        // [2] 스텝 모터 / 방향지시등 제어
+        if (g_left_request)
+        {
+            run_left_sequential();      // 내부에서 끝나면 g_left_request = false; 해주는 구조 추천
+        }
+        else if (g_right_request)
+        {
+            run_right_sequential();
+        }
     }
-    
+
     return 0;
 }
-

@@ -10,6 +10,7 @@ void run_sequential_delay(volatile uint32_t d) {
 
 void run_left_sequential(void)
 {
+	step_motor_port_init();
     for (int rep = 0; rep < TURN_REPEAT_COUNT; rep++)
     {
         for (int i = 0; i < 9; i++)
@@ -35,6 +36,7 @@ void run_left_sequential(void)
 
 void run_right_sequential(void)
 {
+	step_motor_port_init();
     for (int rep = 0; rep < TURN_REPEAT_COUNT; rep++)
     {
         for (int i = 0; i < 9; i++)
