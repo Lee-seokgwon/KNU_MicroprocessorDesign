@@ -1,8 +1,8 @@
 #include "common.h"
 #include "sequential_turn_light.h"
 
-bool g_left_request  = false;
-bool g_right_request = false;
+volatile bool g_left_request  = false;
+volatile bool g_right_request = false;
 
 unsigned char SEQUENTIAL_LIGHT_PATTERN_LEFT[9] = {
     0b00000001,

@@ -57,10 +57,10 @@ uint16_t read_potentiometer(void)
 {
     // 예제 코드와 완전히 동일한 방식
     adc_start_potentiometer();
-    
+
     // 변환 완료 대기 (예제 코드와 동일)
     while ((ADC0_SC1A & (1 << COCO_BIT)) == 0) {}
-    
+
     // 변환 결과 읽기 (12bit ADC: 0~4095)
     return (uint16_t)ADC0_RA;
 }
