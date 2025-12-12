@@ -89,11 +89,11 @@ int main(void)
     static uint32_t humid_display_counter = 0;     // 온습도 LCD 표시 카운터
     static uint32_t pot_display_counter = 0;       // 가변저항 LCD 표시 카운터
     
-    // [최적화] 업데이트 주기 설정
-    #define LCD_UPDATE_INTERVAL     10   // LCD 업데이트 주기 (10 루프마다)
+    // [최적화] 업데이트 주기 설정 (스텝 모터 동작 중에는 실행되지 않으므로 주기 단축 가능)
+    #define LCD_UPDATE_INTERVAL     3    // LCD 업데이트 주기 (3 루프마다, 약 0.3초) - 빠른 반응
     #define HUMID_READ_INTERVAL     50   // 온습도 센서 읽기 주기 (50 루프마다, 약 5초)
-    #define HUMID_DISPLAY_INTERVAL  20   // 온습도 LCD 표시 주기 (20 루프마다, 약 2초)
-    #define POT_DISPLAY_INTERVAL    5    // 가변저항 LCD 표시 주기 (5 루프마다)
+    #define HUMID_DISPLAY_INTERVAL  10   // 온습도 LCD 표시 주기 (10 루프마다, 약 1초) - 더 빠른 표시
+    #define POT_DISPLAY_INTERVAL    2    // 가변저항 LCD 표시 주기 (2 루프마다, 약 0.2초) - 빠른 반응
 
     // 첫 번째 읽기로 ADC 초기화 (더미 읽기)
     read_potentiometer();
