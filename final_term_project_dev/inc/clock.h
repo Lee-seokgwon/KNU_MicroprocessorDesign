@@ -1,33 +1,59 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
-#include "common.h"
+#include <stdint.h>
 
-// 전역 변수 (clock.c에서 정의)
-extern unsigned char current_digit_display;
-extern unsigned int g_hour;
-extern unsigned int g_minute;
-extern unsigned int g_second;
-extern unsigned char clock_running;
-extern unsigned char colon_state;
-extern unsigned char switch_d10_pressed_flag;
-extern unsigned char switch_d11_pressed_flag;
-extern unsigned char switch_e10_pressed_flag;
-extern unsigned char switch_e11_pressed_flag;
+//============================================================================
+// Clock Functions
+//============================================================================
 
-// 세그먼트 / 자릿수 제어
-void clear_all_segments(void);
-void set_digit_pattern(unsigned char digit);
-void select_digit_position(unsigned char position);
-void display_time_dynamic(void);
+/**
+ * @brief 7-Segment 디스플레이 GPIO 초기화
+ */
+void clock_gpio_init(void);
 
-// 제어/상태
-void handle_switch_polling(void);
-void init_gpio_hardware(void);
-void colon_on(void);
-void colon_off(void);
-void increment_time_one_second(void);
+/**
+ * @brief SysTick 타이머 초기화 (1ms 주기)
+ * @param core_clock_hz 코어 클럭 주파수 (Hz)
+ */
+void clock_systick_init(uint32_t core_clock_hz);
 
-#endif // CLOCK_H
+/**
+ * @brief 현재 시간 가져오기
+ * @param hour 시 (0~23)
+ * @param minute 분 (0~59)
+ * @param second 초 (0~59)
+ */
+void clock_get_time(uint8_t *hour, uint8_t *minute, uint8_t *second);
 
+/**
+ * @brief 시간 설정
+ * @param hour 시 (0~23)
+ * @param minute 분 (0~59)
+ * @param second 초 (0~59)
+ */
+void clock_set_time(uint8_t hour, uint8_t minute, uint8_t second);
+
+/**
+ * @brief 시간 1초 증가
+ */
+void clock_increment_one_second(void);
+
+/**
+ * @brief 디스플레이 동적 스캔 (매번 호출 시 다음 자릿수 표시)
+ */
+void clock_display_update(void);
+
+/**
+ * @brief 현재 ms 틱 값 가져오기
+ * @return ms 틱 값
+ */
+uint32_t clock_get_ms_ticks(void);
+
+/**
+ * @brief SysTick 인터럽트 핸들러 (외부에서 호출)
+ */
+void SysTick_Handler(void);
+
+#endif
 

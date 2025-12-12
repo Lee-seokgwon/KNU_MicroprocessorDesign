@@ -1,42 +1,47 @@
+// S32K144 7-Segment Digital Clock (HH:MM:SS)
+// 세그먼트: A,B,C,D = PTB4,5,6,7 / E,F,G = PTA11,12,13
+// COLON: PTA14 (active-low, 항상 ON)
+// 자릿수(COM): PTC3,6,7,8,9,10
+
+#include "S32K144.h"
+#include "common.h"
 #include "clock.h"
 
+// 코어 클럭 주파수 (Hz)
+// - 아무 클럭 초기화 안 했으면 기본 FIRC 48MHz일 가능성이 큼 → 48000000U
+// - 만약 직접 80MHz로 올렸으면 80000000U로 바꾸세요.
+#define CORE_CLOCK_HZ   (48000000U)
 
-// ---------- 메인 ----------
-int main(void) {
-    init_gpio_hardware();
-    clear_all_segments();
+int main(void)
+{
+    // GPIO 초기화
+    clock_gpio_init();
 
-    // 초기 시각 설정 (원하면 바꿔도 됨)
-    g_hour = 18;
-    g_minute = 0;
-    g_second = 0;
+    // 시계 시작값 설정
+    clock_set_time(0, 0, 0);
 
-    colon_on();    // 시작 시 콜론 ON
-    colon_state = 1;
-    clock_running = 1;
+    // SysTick 1ms 타이머 초기화
+    clock_systick_init(CORE_CLOCK_HZ);
 
-    unsigned int soft_sec_counter = 0;  // 소프트웨어 초 카운터
+    uint32_t last_scan_ms = 0U;   // 디지트 스캔 기준 시간
+    uint32_t last_sec_ms  = 0U;   // 1초 기준 시간
 
-    for(;;) {
-        // 1) 스위치 처리
-        // handle_switch_polling();
+    for (;;) {
+        uint32_t now = clock_get_ms_ticks();
 
-        // 2) 디스플레이 동적 스캔 (화면 유지)
-        for (int scan_count = 0; scan_count < 200; scan_count++) {
-            display_time_dynamic();
-            for (volatile int delay = 0; delay < 800; delay++);  // 짧은 지연
+        // 1) 디스플레이 동적 스캔 (대략 1ms마다 한 자릿수씩)
+        if ((now - last_scan_ms) >= 1U) {
+            last_scan_ms = now;
+            clock_display_update();
         }
 
-        // 3) 소프트웨어로 "대충 1초" 만들기
-        soft_sec_counter++;
-        if (soft_sec_counter >= 100) {   // 이 값은 대충 맞춰서 쓰는 용도 (정확한 1초는 아님)
-            soft_sec_counter = 0;
-
-            // 시간 +1초
-            increment_time_one_second();
-
+        // 2) 정확히 1000ms마다 시간 +1초
+        if ((now - last_sec_ms) >= 1000U) {
+            last_sec_ms += 1000U;   // 드리프트 방지용: += 1000U 로 누적
+            clock_increment_one_second();
         }
     }
 
-    return 0;
+    // 여긴 도달하지 않음
+    // return 0;
 }
