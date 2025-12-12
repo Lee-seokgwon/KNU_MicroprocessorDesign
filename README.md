@@ -120,3 +120,10 @@ Body size 15.5mm x 12mm x 5.5mm
 common.h에 #define PTD12 12 추가해줘
 
 
+기존의 숫자 올리는 코드들이나 이런걸 pruning가지치기해서 7segment가 포함된, clock.c  clock.h만들어줌
+
+
+시계, 습도센서 무조건 합치기, 초음파 
+
+
+오늘 시계 습도 같이 도는거 무조거 ㄴ되겧가ㅣ 

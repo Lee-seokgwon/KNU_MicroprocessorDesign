@@ -1,3 +1,12 @@
+LCD핀
+데이터 핀:
+- D0~D3: PTA0, PTA1, PTA2, PTA3
+- D4~D7: PTB0, PTB1, PTB2, PTB3
+제어 핀:
+- RS, RW, EN: PTC0, PTC1, PTC2
+
+
+
 
       J3                                    J2
 PTB6                              PTE10 / PTA3     NC

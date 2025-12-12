@@ -55,6 +55,20 @@
 #define PTA7 7
 #define PTA8 8
 #define PTA9 9
+#define PTA10 10
+#define PTA11 11
+#define PTA12 12
+#define PTA13 13
+#define PTA14 14
+
+#define PTC3 3
+#define PTC4 4
+#define PTC5 5
+#define PTC6 6
+#define PTC7 7
+#define PTC8 8
+#define PTC9 9
+#define PTC10 10
 
 #define PTB0 0
 #define PTB1 1

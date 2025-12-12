@@ -23,10 +23,8 @@ int main(void)
 
     /* 초기화 메시지 표시 */
     lcd_clear();
-    lcd_set_cursor(0, 0);
-    lcd_print_string("Humid Temp Sensor");
     lcd_set_cursor(1, 0);
-    lcd_print_string("Initializing...");
+    lcd_print_string("Initializing..");
     delay_ms(2000u);
 
     /* 센서 안정화 대기 (최소 2초) */
