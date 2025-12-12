@@ -64,6 +64,8 @@
 #define PTB5 5
 #define PTB6 6
 #define PTB7 7
+#define PTB10 10
+#define PTB11 11
 
 #define PTC12 12
 #define PTC13 13
