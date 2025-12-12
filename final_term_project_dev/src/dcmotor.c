@@ -12,15 +12,15 @@ void DcMotor_init(void)
 {
     // PORTB 클럭 활성화
     PCC_PORTB |= (1u << CGC_BIT);
-    
+
     // PTB10을 FTM2_CH0로 설정 (전진용 PWM)
     PORTB_PCR(MOTOR_FORWARD_PIN) &= ~((0b111) << MUX_BITS);
     PORTB_PCR(MOTOR_FORWARD_PIN) |=  ((0b010) << MUX_BITS);  // ALT2 = FTM2_CH0
-    
+
     // PTB11을 FTM2_CH1로 설정 (후진용 PWM)
     PORTB_PCR(MOTOR_REVERSE_PIN) &= ~((0b111) << MUX_BITS);
     PORTB_PCR(MOTOR_REVERSE_PIN) |=  ((0b010) << MUX_BITS);  // ALT2 = FTM2_CH1
-    
+
     // PWM 초기화 (FTM2_CH0와 FTM2_CH1 모두 초기화)
     FTM2_CH0_PWM();
     FTM2_CH1_PWM();
