@@ -88,7 +88,7 @@ int main(void)
     static uint32_t humid_read_counter = 0;       // 온습도 센서 읽기 카운터
     static uint32_t humid_display_counter = 0;     // 온습도 LCD 표시 카운터
     static uint32_t pot_display_counter = 0;       // 가변저항 LCD 표시 카운터
-    
+
     // [최적화] 업데이트 주기 설정 (스텝 모터 동작 중에는 실행되지 않으므로 주기 단축 가능)
     #define LCD_UPDATE_INTERVAL     3    // LCD 업데이트 주기 (3 루프마다, 약 0.3초) - 빠른 반응
     #define HUMID_READ_INTERVAL     50   // 온습도 센서 읽기 주기 (50 루프마다, 약 5초)
@@ -179,7 +179,7 @@ int main(void)
             if (pot_display_counter >= POT_DISPLAY_INTERVAL)
             {
                 pot_display_counter = 0;
-                
+
                 // LCD에 가변저항 값 표시
                 lcd_clear();
                 lcd_set_cursor(0, 0);
@@ -227,7 +227,7 @@ int main(void)
                 if (lcd_update_counter >= LCD_UPDATE_INTERVAL)
                 {
                     lcd_update_counter = 0;
-                    
+
                     // LCD에 거리 표시
                     lcd_set_cursor(0, 8);
                     lcd_print_string(" Dist:");
@@ -254,10 +254,10 @@ int main(void)
                     GPIOB_PCOR |= (1 << PTB11);
                     pwm_value = 0;  // PWM 끄기
                     motor_running = 0;
-
                     // 긴급 상황은 즉시 표시 (주기 무시)
                     lcd_set_cursor(1, 0);
                     lcd_print_string("EMERGENCY STOP!");
+
                 }
                 else
                 {
@@ -357,4 +357,3 @@ int main(void)
 
     return 0;
 }
-

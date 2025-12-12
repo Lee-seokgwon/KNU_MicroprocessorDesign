@@ -55,6 +55,11 @@
 #define PTA7 7
 #define PTA8 8
 #define PTA9 9
+#define PTA10 10
+#define PTA11 11
+#define PTA12 12
+#define PTA13 13
+#define PTA14 14
 
 #define PTB0 0
 #define PTB1 1
@@ -64,9 +69,19 @@
 #define PTB5 5
 #define PTB6 6
 #define PTB7 7
+#define PTB8 8
+#define PTB9 9
 #define PTB10 10
 #define PTB11 11
 
+#define PTC3 3
+#define PTC4 4
+#define PTC5 5
+#define PTC6 6
+#define PTC7 7
+#define PTC8 8
+#define PTC9 9
+#define PTC10 10
 #define PTC12 12
 #define PTC13 13
 #define PTC14 14
@@ -315,5 +330,62 @@ void NormalRUNmode_80MHz(void);
 //============================================================================
 // External Clock
 //============================================================================
+
+
+//============================================================================
+// SysTick (Cortex-M4 공통)
+//============================================================================
+
+#define SYST_CSR        (*((volatile uint32_t *)0xE000E010U)) // Control and Status
+#define SYST_RVR        (*((volatile uint32_t *)0xE000E014U)) // Reload Value
+#define SYST_CVR        (*((volatile uint32_t *)0xE000E018U)) // Current Value
+
+// SYST_CSR 비트
+#define SYST_CSR_ENABLE     (1U << 0)  // Enable counter
+#define SYST_CSR_TICKINT    (1U << 1)  // Interrupt enable
+#define SYST_CSR_CLKSOURCE  (1U << 2)  // Clock source: 0=외부, 1=프로세서 클럭
+
+#define CORE_CLOCK_HZ   (48000000U)
+
+//============================================================================
+// SysTick
+//============================================================================
+
+//============================================================================
+// 7-Segment Display Pin Definitions
+//============================================================================
+
+// 세그먼트: A,B,C,D = PTB4,5,8,9 / E,F,G = PTA11,12,13
+// COLON: PTA14 (active-low, 항상 ON)
+// 자릿수(COM): PTC3,6,7,8,9,10
+
+// Segments (A,B,C,D → PORTB / E,F,G → PORTA)
+#define SEG_A   (1U << 4)   // PTB4
+#define SEG_B   (1U << 5)   // PTB5
+#define SEG_C   (1U << 8)   // PTB8
+#define SEG_D   (1U << 9)   // PTB9
+
+#define SEG_E   (1U << 11)  // PTA11
+#define SEG_F   (1U << 12)  // PTA12
+#define SEG_G   (1U << 13)  // PTA13
+
+#define SEG_ALL (SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G)
+
+// Colon (PORTA)
+#define COLON_PIN   (1U << 14)
+
+// Digits (PORTC) - 공통 단자
+#define DIGIT_0     (1U << 3)   // H tens
+#define DIGIT_1     (1U << 6)   // H ones
+#define DIGIT_2     (1U << 7)   // M tens
+#define DIGIT_3     (1U << 8)   // M ones
+#define DIGIT_4     (1U << 9)   // S tens
+#define DIGIT_5     (1U << 10)  // S ones
+#define DIGIT_ALL   (DIGIT_0 | DIGIT_1 | DIGIT_2 | DIGIT_3 | DIGIT_4 | DIGIT_5)
+
+//============================================================================
+// 7-Segment Display
+//============================================================================
+
 
 #endif
