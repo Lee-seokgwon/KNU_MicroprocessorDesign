@@ -18,7 +18,7 @@ int main(void)
     clock_gpio_init();
 
     // 시계 시작값 설정
-    clock_set_time(0, 0, 0);
+    clock_set_time(11, 30, 0);
 
     // SysTick 1ms 타이머 초기화
     clock_systick_init(CORE_CLOCK_HZ);
